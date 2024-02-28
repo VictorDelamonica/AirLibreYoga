@@ -1,0 +1,75 @@
+name: Acceptance Cycle
+run-name: Acceptance Cycle
+
+on:
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+        type: choice
+        options:
+        - info
+        - warning
+        - debug
+      runner:
+        description: "Runner Agent"
+        required: true
+        default: 'ubuntu-latest'
+        type: choice
+        options:
+        - ubuntu-latest
+        - self-hosted
+  workflow_run:
+    workflows: ["Commit Cycle"]
+    types:
+      - completed
+
+jobs:
+  run_test:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.runner || 'ubuntu-latest' }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.16.9'
+          channel: 'stable'
+
+      - name: Run tests
+        run: flutter test
+
+  trigger_push_to_master:
+    needs: run_test
+    runs-on: ubuntu-latest
+    if: success()
+  
+    steps:
+    - name: Get Workflow ID
+      id: get_workflow_id
+      run: |
+        export WORKFLOW_ID=$(curl -s -H 'Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
+          -H 'Accept: application/vnd.github.v3+json' \
+          https://api.github.com/repos/${{ github.repository }}/actions/workflows | \
+          grep -E '"name":\s*"[^"]*push_to_master\.yml[^"]*",' | \
+          awk -F'"id":' '{print $2}' | awk -F',' '{print $1}')
+
+    - name: Trigger Push to Master
+      uses: actions/github-script@0.9.0
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const workflowId = process.env.WORKFLOW_ID;
+          if (workflowId) {
+            await github.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: workflowId,
+              ref: 'develop'
+            });
+          } else {
+            console.error('Workflow ID not found.');
+          }

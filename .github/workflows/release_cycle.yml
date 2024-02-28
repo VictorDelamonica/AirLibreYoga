@@ -1,0 +1,74 @@
+name: Release Cycle
+run-name: Release Cycle
+
+on:
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+        type: choice
+        options:
+          - info
+          - warning
+          - debug
+      runner:
+        description: "Runner Agent"
+        required: true
+        default: 'ubuntu-latest'
+        type: choice
+        options:
+          - ubuntu-latest
+          - self-hosted
+      tagVersion:
+        description: "Tag version"
+        required: true
+        type: string
+        default: ${{ readFile(tagVersion.txt) }}
+
+jobs:
+  Build_Apk:
+    runs-on: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.runner || 'ubuntu-latest' }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.16.9'
+          channel: 'stable'
+
+      - name: Build APK
+        run: |
+          flutter build apk --release
+
+      - uses: actions/upload-artifact@v1
+        with:
+          name: release-apk
+          path: build/app/outputs/apk/release/app-release.apk
+
+      - uses: softprops/action-gh-release@v1
+        with:
+          files: build/app/outputs/flutter-apk/app-release.apk
+          token: ${{ secrets.GITHUB_TOKEN }}
+          name: Release ${{ github.run_number }}
+          tag_name: ${{ github.event.inputs.tagVersion }}
+          generate_release_notes: true
+          body: |
+            Release ${{ github.run_number }}
+
+      - name: Increment tag version
+        run: |
+          cd $GITHUB_WORKSPACE
+          if [ -f tagVersion.txt ]; then
+            echo "Already exist"
+          else
+            echo "0.0.1" > tagVersion.txt
+          fi
+          current_version=$(cat tagVersion.txt)
+          
+          # Increment version
+          IFS='.' read -r major minor patch <<< "$current_version"
+          next_version="$major.$minor.$((patch + 1))"
+          echo "$next_version" > tagVersion.txt
