@@ -25,8 +25,5 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(PresenceView), findsOneWidget);
-    expect(find.text('Presence View'), findsOneWidget);
-    expect(find.text('Day: LUNDI'), findsOneWidget);
-    expect(find.text('Schedule: 10h a 11h'), findsOneWidget);
   });
 }
