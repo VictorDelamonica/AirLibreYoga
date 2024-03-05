@@ -89,7 +89,7 @@ void main() {
     await tester.pumpAndSettle();
   });
 
-  testWidgets('Add yogi correctly', (WidgetTester tester) async {
+  testWidgets('Add yogi correctly FOR TEST', (WidgetTester tester) async {
     await tester.pumpWidget(const MyApp());
 
     await tester.tap(find.byIcon(Icons.fax_rounded));
