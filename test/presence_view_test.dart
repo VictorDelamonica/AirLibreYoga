@@ -88,4 +88,11 @@ void main() {
     await tester.tap(find.text('Confirmer'));
     await tester.pumpAndSettle();
   });
+
+  testWidgets('Add yogi correctly', (WidgetTester tester) async {
+    await tester.pumpWidget(const MyApp());
+
+    await tester.tap(find.byIcon(Icons.fax_rounded));
+    await tester.pumpAndSettle();
+  });
 }
