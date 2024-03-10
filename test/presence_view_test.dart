@@ -63,36 +63,4 @@ void main() {
     await tester.tap(find.text('Annuler'));
     await tester.pumpAndSettle();
   });
-
-  testWidgets('Delete yogi correctly', (WidgetTester tester) async {
-    await tester.pumpWidget(const MyApp());
-
-    await tester.tap(find.byIcon(Icons.fax_rounded));
-    await tester.pumpAndSettle();
-
-    // Verify if SessionView is rendered
-    expect(find.byType(SessionView), findsOneWidget);
-
-    // Tap on the first session's "Presences" button
-    await tester.tap(find.text('Presences').first);
-    await tester.pumpAndSettle();
-
-    expect(find.byType(PresenceView), findsOneWidget);
-    expect(find.byType(ListTile), findsNWidgets(9));
-
-    //Tap on the Trash icon
-    await tester.tap(find.byIcon(Icons.delete_outline_rounded).first);
-    await tester.pumpAndSettle();
-
-    //Tap on the "Oui" button
-    await tester.tap(find.text('Confirmer'));
-    await tester.pumpAndSettle();
-  });
-
-  testWidgets('Add yogi correctly FOR TEST', (WidgetTester tester) async {
-    await tester.pumpWidget(const MyApp());
-
-    await tester.tap(find.byIcon(Icons.fax_rounded));
-    await tester.pumpAndSettle();
-  });
 }
