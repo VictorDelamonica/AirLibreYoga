@@ -1,4 +1,5 @@
 import 'package:air_libre_yoga/views/empty_view.dart';
+import 'package:air_libre_yoga/views/people_view.dart';
 import 'package:air_libre_yoga/views/session_view.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -39,7 +40,7 @@ class _EmbeddedViewsState extends State<EmbeddedViews> {
   static const _kEmbeddedViews = <String, Widget>{
     'Session': SessionView(),
     'Other': EmptyView(),
-    'Peoples': EmptyView(),
+    'Peoples': PeopleView(),
   };
 
   static const _kIcons = <String, IconData>{

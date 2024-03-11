@@ -3,12 +3,7 @@ import 'dart:async';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
-class Yogi {
-  final String name;
-  bool value;
-
-  Yogi({required this.name, required this.value});
-}
+import '../utilities/yogi_class.dart';
 
 class PresenceView extends StatefulWidget {
   const PresenceView(
