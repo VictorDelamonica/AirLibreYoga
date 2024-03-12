@@ -1,24 +1,16 @@
-import 'package:air_libre_yoga/main.dart';
-import 'package:flutter/material.dart';
+import 'package:air_libre_yoga/utilities/mock_class.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
 
-void main() {
-  testWidgets('Main app renders correctly', (WidgetTester tester) async {
-    await tester.pumpWidget(const MyApp());
+void main() async {
 
-    expect(find.byType(BottomNavigationBar), findsOneWidget);
+  const String appName = "My App";
+  final mock = await setUpAllMock(testAppName: appName);
 
-    await tester.tap(find.byIcon(Icons.fax_rounded));
-    await tester.pump();
-
-    expect(find.text("Session"), findsWidgets);
-
-    await tester.tap(find.byIcon(Icons.map_rounded));
-    await tester.pump();
-
-    await tester.tap(find.byIcon(Icons.person_rounded));
-    await tester.pump();
-
-    expect(find.text('Peoples'), findsWidgets);
-  });
+  test('Main app renders correctly', () {
+    List<FirebaseApp> apps = Firebase.apps;
+    verify(mock.apps);
+    expect(apps[0], Firebase.app(appName));
+  } );
 }

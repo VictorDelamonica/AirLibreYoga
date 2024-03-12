@@ -1,9 +1,16 @@
 import 'package:air_libre_yoga/views/empty_view.dart';
+import 'package:air_libre_yoga/views/people_view.dart';
 import 'package:air_libre_yoga/views/session_view.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
-void main() {
+import 'firebase_options.dart';
+
+Future<void> main() async {
   runApp(const MyApp());
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -12,7 +19,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Air Libre Yoga',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
         useMaterial3: true,
@@ -33,7 +40,7 @@ class _EmbeddedViewsState extends State<EmbeddedViews> {
   static const _kEmbeddedViews = <String, Widget>{
     'Session': SessionView(),
     'Other': EmptyView(),
-    'Peoples': EmptyView(),
+    'Peoples': PeopleView(),
   };
 
   static const _kIcons = <String, IconData>{

@@ -12,16 +12,16 @@ class SessionView extends StatelessWidget {
           'Valbonne Village\nSalle St Bernardin\nrue de la Brague\nTous niveaux',
     ),
     SessionCardView(
-      day: 'Session 2',
-      schedule: 'This is the second session',
+      day: 'LUNDI',
+      schedule: '12h30 a 13h25',
       description:
-          'Valbonne Village\nSalle St Bernardin\nrue de la Brague\nTous niveaux',
+          'Valbonne Village\nSalle St Bernardin\nrue de la Brague\nPlutot avancé',
     ),
     SessionCardView(
-      day: 'Session 3',
-      schedule: 'This is the third session',
+      day: 'LUNDI',
+      schedule: '19h a 20h',
       description:
-          'Valbonne Village\nSalle St Bernardin\nrue de la Brague\nTous niveaux',
+          'Valbonne\nSalle St Helene\n407 ch. de la Verriere\nTous niveaux',
     ),
   ];
 
