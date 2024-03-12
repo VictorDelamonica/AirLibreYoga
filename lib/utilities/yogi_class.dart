@@ -1,4 +1,5 @@
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/foundation.dart';
 
 class Yogi {
   final String name;
@@ -31,7 +32,9 @@ class Yogi {
             }
           }
           if (yogiData.containsKey('Warning')) {
-            print('Warning: ${yogiData['Warning']}');
+            if (kDebugMode) {
+              print('Warning: ${yogiData['Warning']}');
+            }
             yogiList.add(Yogi(
                 name: yogiName,
                 value: yogiData['value'] ?? false,
