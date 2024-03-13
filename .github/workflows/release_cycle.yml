@@ -25,7 +25,7 @@ on:
         description: "Tag version"
         required: true
         type: string
-        default: ${{ readFile(tagVersion.txt) }}
+        default: 0.0.1
 
 jobs:
   Build_Apk:
