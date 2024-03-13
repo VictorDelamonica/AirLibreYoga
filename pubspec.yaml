@@ -40,6 +40,8 @@ dependencies:
   mockito: ^5.4.4
   firebase_core_platform_interface: ^5.0.0
   plugin_platform_interface: ^2.1.8
+  firebase_crashlytics: ^3.4.19
+  firebase_analytics: ^10.8.10
 
 dev_dependencies:
   flutter_test:
