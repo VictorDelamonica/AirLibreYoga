@@ -1,3 +1,4 @@
+import 'package:air_libre_yoga/firebase_options.dart';
 import 'package:air_libre_yoga/views/empty_view.dart';
 import 'package:air_libre_yoga/views/people_view.dart';
 import 'package:air_libre_yoga/views/session_view.dart';
@@ -8,7 +9,9 @@ import 'package:flutter/material.dart';
 
 Future<void> main() async {
     WidgetsFlutterBinding.ensureInitialized();
-    await Firebase.initializeApp();
+    await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform
+    );
     FlutterError.onError = (errorDetails) {
       FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
     };

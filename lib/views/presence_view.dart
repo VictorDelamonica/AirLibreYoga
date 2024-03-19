@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../utilities/yogi_class.dart';
@@ -25,19 +26,21 @@ class _PresenceViewState extends State<PresenceView> {
     sessionAlias = "${widget.sessionDay} ${widget.sessionSchedule}";
     super.initState();
     fetchYogiData();
-    Future.delayed(const Duration(seconds: 2), () {
-      setState(() {
-        _isLoading = false;
-      });
-    });
   }
 
   Future<void> fetchYogiData() async {
     List<Yogi> fetchedYogiList = await fetchYogiList();
     setState(() {
-      _yogiList = fetchedYogiList.asMap().map((index, yogi) => MapEntry(
-          Yogi(name: yogi.name, value: yogi.value), yogiIsWarning(yogi)));
+      _yogiList = fetchedYogiList.asMap().map((index, yogi) => MapEntry(Yogi(name: yogi.name, value: yogi.value), false));
     });
+    await Future.delayed(const Duration(seconds: 2), () {
+      setState(() {
+        _isLoading = false;
+      });
+    });
+    if (kDebugMode) {
+      print('Yogi list: $_yogiList');
+    }
     await initPresent();
   }
 
@@ -53,27 +56,24 @@ class _PresenceViewState extends State<PresenceView> {
 
     DataSnapshot snapshot = await ref.get();
 
-    if (snapshot.value != null && snapshot.value is Map<dynamic, dynamic>) {
+    if (snapshot.value != null) {
       Map<dynamic, dynamic> yogis = snapshot.value as Map<dynamic, dynamic>;
       // Loop through each Yogi
       yogis.forEach((yogiName, yogiData) {
         if (yogiData is Map<dynamic, dynamic>) {
-          if (yogiData.containsKey('Register') &&
-              yogiData['Register'] is Map<dynamic, dynamic>) {
-            Map<dynamic, dynamic> register =
-                yogiData['Register'] as Map<dynamic, dynamic>;
-
-            // Check if the Yogi has been registered on the specific date
-            if (register.containsKey(sessionAlias)) {
-              bool value = false;
-              if (register[sessionAlias] is Map<dynamic, dynamic>) {
-                Map<dynamic, dynamic> sessionData =
-                    register[sessionAlias] as Map<dynamic, dynamic>;
-                if (sessionData.containsKey(getCurrentDate())) {
-                  value = sessionData[getCurrentDate()];
+          if (yogiData.containsKey('Sessions')) {
+            Map<dynamic, dynamic> sessions = yogiData['Sessions'];
+            if (sessions.containsKey(sessionAlias)) {
+              if (kDebugMode) {
+                print(sessions[sessionAlias]);
+              }
+              Map<dynamic, dynamic> sessionData = sessions[sessionAlias];
+              if (sessionData.containsKey('isRegistered')) {
+                bool isRegistered = sessionData['isRegistered'];
+                if (isRegistered) {
+                  yogiList.add(Yogi(name: yogiName, value: false));
                 }
               }
-              yogiList.add(Yogi(name: yogiName, value: value));
             }
           }
         }
