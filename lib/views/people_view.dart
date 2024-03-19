@@ -11,7 +11,7 @@ class PeopleView extends StatefulWidget {
 }
 
 class _PeopleViewState extends State<PeopleView> {
-  late List<Yogi> _yogiList;
+  late List<Yogi> _yogiList = [];
   final ValueNotifier<bool> _isLoading = ValueNotifier<bool>(true);
 
   final TextEditingController nameController = TextEditingController();
@@ -20,6 +20,8 @@ class _PeopleViewState extends State<PeopleView> {
   bool _session1 = false;
   bool _session2 = false;
   bool _session3 = false;
+  bool _session4 = false;
+  bool _session5 = false;
 
   @override
   void initState() {
@@ -27,10 +29,11 @@ class _PeopleViewState extends State<PeopleView> {
     refreshList();
   }
 
-  void refreshList({re = false}) async {
+  void refreshList() async {
+    var oldLength = _yogiList.length;
     _yogiList = [];
     _isLoading.value = true;
-    await Yogi.getALlYogi().then((List<Yogi> yogis) {
+    Yogi.getALlYogi().then((List<Yogi> yogis) {
       for (var yogi in yogis) {
         setState(() {
           _yogiList.add(yogi);
@@ -45,7 +48,17 @@ class _PeopleViewState extends State<PeopleView> {
     if (kDebugMode) {
       print('Yogi list: $_yogiList');
     }
-    re ? refreshList(re: false) : null;
+    oldLength == _yogiList.length ? refreshList() : null;
+  }
+
+  void cleanControllers() {
+    nameController.clear();
+    phoneController.clear();
+    _session1 = false;
+    _session2 = false;
+    _session3 = false;
+    _session4 = false;
+    _session5 = false;
   }
 
   @override
@@ -160,101 +173,136 @@ class _PeopleViewState extends State<PeopleView> {
                               return StatefulBuilder(
                                 builder: (context, setState) {
                                   return AlertDialog(
-                                    content: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        const Text('Ajouter un Yogi',
-                                            style: TextStyle(fontSize: 24)),
-                                        const SizedBox(height: 16),
-                                        TextField(
-                                          decoration: const InputDecoration(
-                                            labelText: 'Nom du Yogi',
-                                            border: OutlineInputBorder(),
+                                    content: SingleChildScrollView(
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          const Text('Ajouter un Yogi',
+                                              style: TextStyle(fontSize: 24)),
+                                          const SizedBox(height: 16),
+                                          TextField(
+                                            decoration: const InputDecoration(
+                                              labelText: 'Nom du Yogi',
+                                              border: OutlineInputBorder(),
+                                            ),
+                                            controller: nameController,
                                           ),
-                                          controller: nameController,
-                                        ),
-                                        const SizedBox(height: 16),
-                                        TextField(
-                                          keyboardType: TextInputType.phone,
-                                          decoration: const InputDecoration(
-                                            labelText: 'Téléphone',
-                                            border: OutlineInputBorder(),
+                                          const SizedBox(height: 16),
+                                          TextField(
+                                            keyboardType: TextInputType.phone,
+                                            decoration: const InputDecoration(
+                                              labelText: 'Téléphone',
+                                              border: OutlineInputBorder(),
+                                            ),
+                                            controller: phoneController,
                                           ),
-                                          controller: phoneController,
-                                        ),
-                                        const SizedBox(height: 16),
-                                        Column(
-                                          children: [
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                const Text("Lundi 10h a 11h"),
-                                                Checkbox(
-                                                    value: _session1,
-                                                    onChanged: (value) {
-                                                      setState(() {
-                                                        _session1 = value!;
-                                                      });
-                                                    }),
-                                              ],
-                                            ),
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                const Text("Lundi 19h a 20h"),
-                                                Checkbox(
-                                                    value: _session2,
-                                                    onChanged: (value) {
-                                                      setState(() {
-                                                        _session2 = value!;
-                                                      });
-                                                    }),
-                                              ],
-                                            ),
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                const Text(
-                                                    "Mercredi 10h a 11h"),
-                                                Checkbox(
-                                                    value: _session3,
-                                                    onChanged: (value) {
-                                                      setState(() {
-                                                        _session3 = value!;
-                                                      });
-                                                    }),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                        ElevatedButton(
-                                          onPressed: () {
-                                            if (nameController.text.isEmpty) {
-                                              return;
-                                            }
-                                            var yogi = Yogi(
-                                              name: nameController.text,
-                                              value: false,
-                                              phone: phoneController.text,
-                                              sessionRegister: [
-                                                _session1,
-                                                _session2,
-                                                _session3
-                                              ],
-                                            );
-                                            Yogi.addYogi(yogi);
-                                            Navigator.pop(context);
-                                            refreshList(re: true);
-                                          },
-                                          child: const Text('Ajouter'),
-                                        ),
-                                      ],
+                                          const SizedBox(height: 16),
+                                          Column(
+                                            children: [
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  const Text("Lundi 10h a 11h"),
+                                                  Checkbox(
+                                                      value: _session1,
+                                                      onChanged: (value) {
+                                                        setState(() {
+                                                          _session1 = value!;
+                                                        });
+                                                      }),
+                                                ],
+                                              ),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  const Text(
+                                                      "Lundi 12h30 a 13h45"),
+                                                  Checkbox(
+                                                      value: _session2,
+                                                      onChanged: (value) {
+                                                        setState(() {
+                                                          _session2 = value!;
+                                                        });
+                                                      }),
+                                                ],
+                                              ),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  const Text("Lundi 19h a 20h"),
+                                                  Checkbox(
+                                                      value: _session3,
+                                                      onChanged: (value) {
+                                                        setState(() {
+                                                          _session3 = value!;
+                                                        });
+                                                      }),
+                                                ],
+                                              ),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  const Text(
+                                                      "Mercredi 16h30 a 17h45"),
+                                                  Checkbox(
+                                                      value: _session4,
+                                                      onChanged: (value) {
+                                                        setState(() {
+                                                          _session4 = value!;
+                                                        });
+                                                      }),
+                                                ],
+                                              ),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  const Text(
+                                                      "Mercredi 18h a 19h"),
+                                                  Checkbox(
+                                                      value: _session5,
+                                                      onChanged: (value) {
+                                                        setState(() {
+                                                          _session5 = value!;
+                                                        });
+                                                      }),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                          ElevatedButton(
+                                            onPressed: () {
+                                              if (nameController.text.isEmpty) {
+                                                return;
+                                              }
+                                              var yogi = Yogi(
+                                                name: nameController.text,
+                                                value: false,
+                                                phone: phoneController.text,
+                                                sessionRegister: [
+                                                  _session1,
+                                                  _session2,
+                                                  _session3
+                                                ],
+                                              );
+                                              Yogi.addYogi(yogi);
+                                              cleanControllers();
+                                              Navigator.pop(context);
+                                              refreshList();
+                                            },
+                                            child: const Text('Ajouter'),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   );
                                 },

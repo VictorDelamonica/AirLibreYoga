@@ -23,6 +23,18 @@ class SessionView extends StatelessWidget {
       description:
           'Valbonne\nSalle St Helene\n407 ch. de la Verriere\nTous niveaux',
     ),
+    SessionCardView(
+      day: 'MERCREDI',
+      schedule: '16h30 a 17h45',
+      description:
+          'Valbonne\nSalle St Helene\n407 ch. de la Verriere\nTous niveaux',
+    ),
+    SessionCardView(
+      day: 'MERCREDI',
+      schedule: '18h a 19h',
+      description:
+          'Valbonne\nSalle St Helene\n407 ch. de la Verriere\nYoga avançé\nAdultes et Jeunes',
+    ),
   ];
 
   @override
