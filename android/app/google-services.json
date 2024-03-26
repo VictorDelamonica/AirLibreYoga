@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "305269519836",
+    "firebase_url": "https://air-libre-yoga-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "air-libre-yoga",
+    "storage_bucket": "air-libre-yoga.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:305269519836:android:dfef27b8b2cd0aebd48b19",
+        "android_client_info": {
+          "package_name": "com.victor.delamonica.air_libre_yoga"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBKnptyc2vvm5y5vz9dD7YH-_Pz_TfbXpQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

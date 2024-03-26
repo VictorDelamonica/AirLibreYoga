@@ -1,22 +1,19 @@
-import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:air_libre_yoga/utilities/logger_class.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:flutter/foundation.dart';
 
 class Yogi {
   final String name;
-  bool value = false;
+  bool isPresent = false;
   String phone = '';
   bool isWarning = false;
   List<bool> sessionRegister = [];
 
   Yogi(
       {required this.name,
-      this.value = false,
+      this.isPresent = false,
       this.isWarning = false,
       this.sessionRegister = const [],
       this.phone = ''});
-
-  bool get isPresent => value;
 
   static Future<List<Yogi>> getALlYogi() async {
     List<Yogi> yogiList = [];
@@ -35,13 +32,15 @@ class Yogi {
         if (yogiData is Map<dynamic, dynamic>) {
           var yogi = Yogi(
             name: yogiName,
-            value: yogiData['value'],
+            isPresent: yogiData['isPresent'] ?? false,
             phone: yogiData['phone'],
             isWarning: yogiData['Warning'],
             sessionRegister: [
               yogiData['Sessions']['LUNDI 10h a 11h']['isRegistered'],
               yogiData['Sessions']['LUNDI 12h30 a 13h25']['isRegistered'],
               yogiData['Sessions']['LUNDI 19h a 20h']['isRegistered'],
+              yogiData['Sessions']['MERCREDI 16h30 a 17h45']['isRegistered'],
+              yogiData['Sessions']['MERCREDI 18h a 19h']['isRegistered'],
             ],
           );
           yogiList.add(yogi);
@@ -58,14 +57,41 @@ class Yogi {
       app: FirebaseDatabase.instance.app,
     );
     DatabaseReference ref = database.ref(yogi.name);
-    await ref.update({'value': yogi.value});
-    await FirebaseAnalytics.instance.logEvent(
-      name: "upd_yogi",
-      parameters: {
-        "content_type": "string",
-        "yogi_name": yogi.name,
+    var json = {
+      'Missing': 0,
+      'phone': yogi.phone,
+      'Sessions': {
+        'LUNDI 10h a 11h': {
+          'isRegistered': yogi.sessionRegister[0],
+          'isPresent': false,
+          'attendees': List<String>.empty(growable: true),
+        },
+        'LUNDI 12h30 a 13h25': {
+          'isRegistered': yogi.sessionRegister[1],
+          'isPresent': false,
+          'attendees': List<String>.empty(growable: true),
+        },
+        'LUNDI 19h a 20h': {
+          'isRegistered': yogi.sessionRegister[2],
+          'isPresent': false,
+          'attendees': List<String>.empty(growable: true),
+        },
+        'MERCREDI 16h30 a 17h45': {
+          'isRegistered': yogi.sessionRegister[3],
+          'isPresent': false,
+          'attendees': List<String>.empty(growable: true),
+        },
+        'MERCREDI 18h a 19h': {
+          'isRegistered': yogi.sessionRegister[4],
+          'isPresent': false,
+          'attendees': List<String>.empty(growable: true),
+        },
       },
-    );
+      'Warning': yogi.isWarning
+    };
+    await ref.update(json);
+    Logger.logInFirebase("update_yogi", {"yogi_name": yogi.name});
+    Logger.logInConsoleInfo("Yogi ${yogi.name} updated");
   }
 
   static Future<void> deleteYogi(Yogi yogi) async {
@@ -76,13 +102,8 @@ class Yogi {
     );
     DatabaseReference ref = database.ref(yogi.name);
     await ref.remove();
-    await FirebaseAnalytics.instance.logEvent(
-      name: "rem_yogi",
-      parameters: {
-        "content_type": "string",
-        "yogi_name": yogi.name,
-      },
-    );
+    Logger.logInFirebase("rem_yogi", {"yogi_name": yogi.name});
+    Logger.logInConsoleInfo("Yogi ${yogi.name} removed");
   }
 
   static Future<void> addYogi(Yogi yogi) async {
@@ -101,42 +122,68 @@ class Yogi {
     DatabaseReference ref = database.ref(yogi.name);
     var json = {
       'Missing': 0,
-      'value': yogi.value,
+      'value': yogi.isPresent,
       'phone': yogi.phone,
       'Sessions': {
         'LUNDI 10h a 11h': {
           'isRegistered': yogi.sessionRegister[0],
+          'isPresent': false,
           'attendees': List<String>.empty(growable: true),
         },
         'LUNDI 12h30 a 13h25': {
           'isRegistered': yogi.sessionRegister[1],
+          'isPresent': false,
           'attendees': List<String>.empty(growable: true),
         },
         'LUNDI 19h a 20h': {
           'isRegistered': yogi.sessionRegister[2],
           'attendees': List<String>.empty(growable: true),
+          'isPresent': false,
         },
         'MERCREDI 16h30 a 17h45': {
           'isRegistered': yogi.sessionRegister[3],
           'attendees': List<String>.empty(growable: true),
+          'isPresent': false,
         },
         'MERCREDI 18h a 19h': {
           'isRegistered': yogi.sessionRegister[4],
           'attendees': List<String>.empty(growable: true),
+          'isPresent': false,
         },
       },
-      'Warning': yogi.value
+      'Warning': yogi.isPresent
     };
-    if (kDebugMode) {
-      print('Adding Yogi: ${yogi.name}\n$json');
-    }
     await ref.set(json);
-    await FirebaseAnalytics.instance.logEvent(
-      name: "add_yogi",
-      parameters: {
-        "content_type": "string",
-        "yogi_name": yogi.name,
-      },
+    Logger.logInFirebase("add_yogi", {"yogi_name": yogi.name});
+    Logger.logInConsoleInfo("Yogi ${yogi.name} added");
+  }
+
+  static void updateAllYogi() {
+    getALlYogi().then((yogis) {
+      for (var yogi in yogis) {
+        updateYogi(yogi);
+      }
+    });
+  }
+
+  static void updatePresence(List<Yogi> yogiList, String sessionAlias) {
+    FirebaseDatabase database = FirebaseDatabase.instanceFor(
+      databaseURL:
+          'https://air-libre-yoga-default-rtdb.europe-west1.firebasedatabase.app/',
+      app: FirebaseDatabase.instance.app,
     );
+    DatabaseReference ref = database.ref();
+
+    var nbPresent = 0;
+    for (var yogi in yogiList) {
+      if (yogi.isPresent) {
+        nbPresent++;
+      }
+      ref.child(yogi.name).child('Sessions').child(sessionAlias).update({
+        'isPresent': yogi.isPresent,
+      });
+    }
+    Logger.logInFirebase("update_presence",
+        {"session_alias": sessionAlias, "nb_present": nbPresent});
   }
 }
