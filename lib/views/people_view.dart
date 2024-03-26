@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'package:air_libre_yoga/utilities/logger_class.dart';
 import 'package:flutter/material.dart';
 
 import '../utilities/yogi_class.dart';
@@ -45,9 +45,7 @@ class _PeopleViewState extends State<PeopleView> {
         _isLoading.value = false;
       });
     });
-    if (kDebugMode) {
-      print('Yogi list: $_yogiList');
-    }
+    Logger.logInConsoleInfo('List refreshed with ${_yogiList.length} yogis');
     oldLength == _yogiList.length ? refreshList() : null;
   }
 
@@ -286,7 +284,7 @@ class _PeopleViewState extends State<PeopleView> {
                                               }
                                               var yogi = Yogi(
                                                 name: nameController.text,
-                                                value: false,
+                                                isPresent: false,
                                                 phone: phoneController.text,
                                                 sessionRegister: [
                                                   _session1,
@@ -311,7 +309,7 @@ class _PeopleViewState extends State<PeopleView> {
                       },
                       child: const Icon(Icons.add_rounded),
                     ),
-                  )
+                  ),
                 ]),
         );
       },
