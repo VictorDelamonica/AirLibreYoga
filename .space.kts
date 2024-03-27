@@ -18,3 +18,13 @@ job("Deploy to space") {
         }
     }
 }
+
+job("Test") {
+    container(displayName = "Say Hello", image = "ubuntu") {
+        shellScript {
+            content = """
+                echo "I can run shellScript only once!"
+            """
+        }
+    }
+}
