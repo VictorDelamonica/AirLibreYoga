@@ -1,5 +1,5 @@
 job("Deploy to space") {
-    container("amazoncorretto:17-alpine") {
+    container(displayName = "Api", image = "amazoncorretto:17-alpine") {
         kotlinScript { api ->
             api.space().projects.automation.deployments.start(
                     project = api.projectIdentifier(),
